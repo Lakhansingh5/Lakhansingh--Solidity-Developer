@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 
 import { createContext } from "react";
@@ -19,10 +19,12 @@ const getEthereumContract = () => {
   return transactionsContract;
 };
 
-export const TransactionProvider = ({ children }) => {
+export const TransactionProvider = ({children}) => {
   const [currentAccount, setCurrentAccount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [transactionCount, setTransactionCount] = useState(localStorage.getItem("transactionCount"));
+  const [transactionCount, setTransactionCount] = useState(
+    localStorage.getItem("transactionCount")
+  );
 
   const [formData, setformData] = useState({
     addressTo: "",
@@ -101,10 +103,10 @@ export const TransactionProvider = ({ children }) => {
       console.log(`Success - ${transactionHash.hash}`);
       setIsLoading(false);
 
-      const transactionsCount = await transactionsContract.getTransactionCount();
+      const transactionsCount =
+        await transactionsContract.getTransactionCount();
       setTransactionCount(transactionsCount.toNumber());
       window.location.reload();
-    
     } catch (error) {
       console.log(error);
 
@@ -114,17 +116,19 @@ export const TransactionProvider = ({ children }) => {
 
   useEffect(() => {
     checkIfWalletIsConnect();
-  }, []);
+  }, [transactionCount]);
 
   return (
     <TransactionContext.Provider
       value={{
+        transactionCount,
         connectWallet,
         currentAccount,
         formData,
         setformData,
         handleChange,
         sendTransaction,
+        isLoading,
       }}
     >
       {children}
